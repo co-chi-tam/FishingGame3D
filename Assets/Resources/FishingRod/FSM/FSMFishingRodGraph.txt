@@ -1,0 +1,26 @@
+{
+  "fsm": [
+    {
+      "condition_name": "IsRoot",
+      "state_name": "RepairFishingState",
+      "states": [
+        {
+          "condition_name": "IsBaitThrowed",
+          "state_name": "StartFishingState",
+          "states": [
+            {
+              "condition_name": "IsFishBite",
+              "state_name": "FinishFishingState",
+              "states": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "condition_name": "IsAnyState",
+      "state_name": "AnyState",
+      "states": []
+    }
+  ]
+}

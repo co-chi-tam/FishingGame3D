@@ -2,24 +2,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using FSM;
 
-public class CFishingRodController : CSimpleController {
+public class CFishingRodController : CSimpleController, IFishingRodContext {
 
 	#region Internal class
 
 	[Serializable]
 	public class CFishingRodData {
 
-		[Header("Fishing Rod")]
+		[Header("Throw force")]
 		[Range(0.1f, 1f)]
 		public float maximumThrowForce		= 0f;
 		public float maximumForceTimer		= 0f;
 		public AnimationCurve throwForceCurve;
 
+		[Header("Scroll force")]
+		public float maximumScrollForce = 0f;
+		public AnimationCurve scrollingForceCurve;
+
 		public CFishingRodData ()
 		{
 			this.maximumThrowForce		= 0.5f;
 			this.maximumForceTimer		= 3f;
+
+			this.maximumScrollForce 	= 2f;
 		}
 
 	}
@@ -31,11 +38,16 @@ public class CFishingRodController : CSimpleController {
 	[Header("Data")]
 	[SerializeField]	protected CFishingRodData m_Data;
 
+	[Header("FSM")]
+	[SerializeField]	protected TextAsset m_FSMText;
+#if UNITY_EDITOR
+	[SerializeField]	protected string m_FSMStateName;
+#endif
+
 	[Header("Animator")]
 	[SerializeField]	protected Animator m_Animator;
 
 	[Header("Bait")]
-	[SerializeField]	protected bool m_IsBaitThrowed;
 	[SerializeField]	protected CSimpleBaitController m_Bait;
 	[SerializeField]	protected LayerMask m_WaterLayerMask;
 
@@ -43,7 +55,10 @@ public class CFishingRodController : CSimpleController {
 		get { return this.m_Data; }
 	}
 
+	protected bool m_IsBaitThrowed;
 	protected float m_CurrentThrowForce = 0f;
+
+	protected FSMManager m_FSMManager;
 
 	#endregion
 
@@ -53,19 +68,32 @@ public class CFishingRodController : CSimpleController {
 	{
 		base.Awake ();
 		this.m_IsBaitThrowed = false;
+
+		this.m_FSMManager = new FSMManager ();
+		this.m_FSMManager.LoadFSM (this.m_FSMText.text);
+
+		this.m_FSMManager.RegisterState ("RepairFishingState", 		new FSMRepairFishingState(this));
+		this.m_FSMManager.RegisterState ("StartFishingState", 		new FSMStartFishingState(this));
+		this.m_FSMManager.RegisterState ("FinishFishingState", 		new FSMFinishFishingState(this));
+
+		this.m_FSMManager.RegisterCondition ("IsBaitThrowed",		this.IsBaitThrowed);
+		this.m_FSMManager.RegisterCondition ("IsFishBite", 			this.IsFishBite);
 	}
 
 	protected override void Update ()
 	{
 		base.Update ();
-		this.StartFishing (Time.deltaTime);
+		this.m_FSMManager.UpdateState (Time.deltaTime);
+#if UNITY_EDITOR
+		this.m_FSMStateName = this.m_FSMManager.currentStateName;
+#endif
 	}
 
 	#endregion
 
 	#region Main methods
 
-	public virtual void StartFishing(float dt) {
+	public virtual void RepairFishing(float dt) {
 		if (this.m_IsBaitThrowed == true)
 			return;
 		if (Input.GetMouseButtonDown (0)) {
@@ -81,7 +109,6 @@ public class CFishingRodController : CSimpleController {
 			if (Physics.Raycast (ray, out hitInfo, this.m_WaterLayerMask)) {
 				var throwForce = this.m_CurrentThrowForce / this.m_Data.maximumForceTimer;
 				var totalForce = this.m_Data.maximumThrowForce * this.m_Data.throwForceCurve.Evaluate (throwForce);
-				Debug.Log (totalForce);
 				var baitPosition = hitInfo.point * totalForce;
 				this.m_Bait.ThrowBait (baitPosition, () => {
 					Debug.Log ("Throwed");
@@ -91,6 +118,20 @@ public class CFishingRodController : CSimpleController {
 			this.m_IsBaitThrowed = true;
 			this.m_CurrentThrowForce = 0f;
 		}
+	}
+
+	#endregion
+
+	#region FSM
+
+	public virtual bool IsBaitThrowed ()
+	{
+		return this.m_IsBaitThrowed;
+	}
+
+	public virtual bool IsFishBite ()
+	{
+		return false;
 	}
 
 	#endregion
