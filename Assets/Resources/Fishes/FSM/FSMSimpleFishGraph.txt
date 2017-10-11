@@ -1,0 +1,31 @@
+{
+  "fsm": [
+    {
+      "condition_name": "IsRoot",
+      "state_name": "FishIdleState",
+      "states": [
+        {
+          "condition_name": "HaveBait",
+          "state_name": "FishChaseBaitState",
+          "states": [
+            {
+              "condition_name": "IsBiteBail",
+              "state_name": "FishBiteBaitState",
+              "states": []
+            },
+            {
+              "condition_name": "!HaveBait||!IsBailTimer",
+              "state_name": "FishIdleState",
+              "states": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "condition_name": "IsAnyState",
+      "state_name": "AnyState",
+      "states": []
+    }
+  ]
+}
