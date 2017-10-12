@@ -7,6 +7,7 @@ public class Parabola : MonoBehaviour {
 	[Header("Info")]
 	[SerializeField]	private float m_FiringAngle = 45f;
 	[SerializeField]	private float m_Gravity = 9.8f;
+	[SerializeField]	private float m_DeltaSpeed = 1f;
 
 	private Transform m_Transform;
 	private bool m_OnActive;
@@ -41,12 +42,13 @@ public class Parabola : MonoBehaviour {
 			m_Transform.rotation = Quaternion.LookRotation (direction);
 		}
 		float elapseTime = 0;
-		while (elapseTime <= flightDuration - Time.deltaTime)
+		var deltaSpeed = Time.deltaTime * this.m_DeltaSpeed;
+		while (elapseTime <= flightDuration - deltaSpeed)
 		{
 			if (this.m_Transform == null)
-				goto Finish;
-			this.m_Transform.Translate(0, (y - (m_Gravity * elapseTime)) * Time.deltaTime, x * Time.deltaTime, Space.Self);
-			elapseTime += Time.deltaTime;
+				break;
+			this.m_Transform.Translate(0, (y - (m_Gravity * elapseTime)) * deltaSpeed, x * deltaSpeed, Space.Self);
+			elapseTime += deltaSpeed;
 			if (processing != null) {
 				processing(elapseTime / flightDuration);
 			}
@@ -56,9 +58,5 @@ public class Parabola : MonoBehaviour {
 			complete ();
 		}
 		m_OnActive = false;
-
-		Finish: {
-			// TODO
-		}
 	}
 }

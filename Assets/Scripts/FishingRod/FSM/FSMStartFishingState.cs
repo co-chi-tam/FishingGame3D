@@ -19,6 +19,7 @@ public class FSMStartFishingState : FSMBaseState{
 	public override void UpdateState(float dt)
 	{
 		base.UpdateState (dt);
+		this.m_Controller.ScrollBait (dt);
 	}
 
 	public override void ExitState()

@@ -44,6 +44,18 @@ public class CSimpleController : MonoBehaviour {
 
 	#region Getter && Setter
 
+	public virtual Vector3 GetFitPosition() {
+		var result = this.m_Transform.position;
+		result.y = 0f;
+		return result;
+	}
+
+	public virtual Vector3 GetFitPosition(Vector3 position) {
+		var result = position;
+		result.y = 0f;
+		return result;
+	}
+
 	public virtual Vector3 GetPosition() {
 		return this.m_Transform.position;
 	}

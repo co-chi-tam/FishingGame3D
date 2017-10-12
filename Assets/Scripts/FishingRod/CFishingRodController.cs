@@ -25,7 +25,6 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 		{
 			this.maximumThrowForce		= 0.5f;
 			this.maximumForceTimer		= 3f;
-
 			this.maximumScrollForce 	= 2f;
 		}
 
@@ -48,6 +47,7 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 	[SerializeField]	protected Animator m_Animator;
 
 	[Header("Bait")]
+	[SerializeField]	protected GameObject m_BaitPoint;
 	[SerializeField]	protected CSimpleBaitController m_Bait;
 	[SerializeField]	protected LayerMask m_WaterLayerMask;
 
@@ -56,7 +56,7 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 	}
 
 	protected bool m_IsBaitThrowed;
-	protected float m_CurrentThrowForce = 0f;
+	protected float m_CurrentForce = 0f;
 
 	protected FSMManager m_FSMManager;
 
@@ -80,6 +80,12 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 		this.m_FSMManager.RegisterCondition ("IsFishBite", 			this.IsFishBite);
 	}
 
+	protected override void Start ()
+	{
+		base.Start ();
+		this.m_Bait.SetPosition (this.m_BaitPoint.transform.position);
+	}
+
 	protected override void Update ()
 	{
 		base.Update ();
@@ -97,26 +103,46 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 		if (this.m_IsBaitThrowed == true)
 			return;
 		if (Input.GetMouseButtonDown (0)) {
-			this.m_CurrentThrowForce = 0f;
-			this.SetAnimation ("ScrollType", 1);
+			this.m_CurrentForce = 0f;
+			this.SetAnimation ("FishingStep", 1);
 		}
 		if (Input.GetMouseButton (0)) {
-			this.m_CurrentThrowForce += dt;
+			this.m_CurrentForce += dt;
+			this.m_Bait.SetPosition (this.m_BaitPoint.transform.position);
 		}
 		if (Input.GetMouseButtonUp (0)) {
 			var ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 			RaycastHit hitInfo;
 			if (Physics.Raycast (ray, out hitInfo, this.m_WaterLayerMask)) {
-				var throwForce = this.m_CurrentThrowForce / this.m_Data.maximumForceTimer;
+				var throwForce = this.m_CurrentForce / this.m_Data.maximumForceTimer;
 				var totalForce = this.m_Data.maximumThrowForce * this.m_Data.throwForceCurve.Evaluate (throwForce);
-				var baitPosition = hitInfo.point * totalForce;
+				var minimumRange = hitInfo.point;
+				var baitPosition =  minimumRange * totalForce;
 				this.m_Bait.ThrowBait (baitPosition, () => {
 					Debug.Log ("Throwed");
 				});
-				this.SetAnimation ("ScrollType", 2);
+				this.SetAnimation ("FishingStep", 2);
 			}
 			this.m_IsBaitThrowed = true;
-			this.m_CurrentThrowForce = 0f;
+			this.m_CurrentForce = 0f;
+		}
+	}
+
+	public virtual void ScrollBait(float dt) {
+		if (this.m_IsBaitThrowed == false)
+			return;
+		if (Input.GetMouseButton (0)) {
+			var direction = this.GetFitPosition (this.m_BaitPoint.transform.position) - this.m_Bait.GetFitPosition ();
+			var updatePosition = direction.normalized 
+				* this.m_Data.maximumScrollForce 
+				* this.m_Data.scrollingForceCurve.Evaluate (this.m_CurrentForce) 
+				* dt;
+			var movePosition = this.m_Bait.GetPosition () + updatePosition;
+			this.m_Bait.SetPosition (movePosition);
+			this.m_CurrentForce += dt;
+		}
+		if (Input.GetMouseButtonUp (0)) {
+			this.m_CurrentForce = 0f;
 		}
 	}
 
