@@ -43,7 +43,7 @@ public class Parabola : MonoBehaviour {
 		}
 		float elapseTime = 0;
 		var deltaSpeed = Time.deltaTime * this.m_DeltaSpeed;
-		while (elapseTime <= flightDuration - deltaSpeed)
+		while (elapseTime < flightDuration - Time.deltaTime)
 		{
 			if (this.m_Transform == null)
 				break;

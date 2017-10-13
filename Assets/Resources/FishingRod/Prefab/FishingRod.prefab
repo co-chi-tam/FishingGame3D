@@ -656,21 +656,27 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-    maximumScrollForce: 2
+    maximumScrollForce: 3
     scrollingForceCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 2
         time: 0
         value: 0
+        inSlope: 4.1211047
+        outSlope: 4.1211047
+        tangentMode: 0
+      - serializedVersion: 2
+        time: 0.5
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
       - serializedVersion: 2
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
+        time: 0.9945679
+        value: 0.010211945
+        inSlope: -4.5738916
+        outSlope: -4.5738916
         tangentMode: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -732,7 +738,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 2.9999952, y: 14.118611, z: 12.976903}
-  - {x: 2.88, y: 13.191, z: 12.959}
+  - {x: 3, y: 13, z: 13}
   m_Parameters:
     serializedVersion: 2
     widthMultiplier: 0.1

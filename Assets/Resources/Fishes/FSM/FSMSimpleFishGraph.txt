@@ -5,7 +5,7 @@
       "state_name": "FishIdleState",
       "states": [
         {
-          "condition_name": "HaveBait",
+          "condition_name": "HaveBait&&IsBailTimer",
           "state_name": "FishChaseBaitState",
           "states": [
             {

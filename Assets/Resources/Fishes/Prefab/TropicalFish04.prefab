@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4597265788643730}
   - component: {fileID: 33883265659120646}
   - component: {fileID: 23275492268625992}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: TropicalFish04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37,9 +37,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4716028352120092}
   - component: {fileID: 114094746244889766}
-  m_Layer: 0
+  - component: {fileID: 135431253930292842}
+  m_Layer: 9
   m_Name: TropicalFish04
-  m_TagString: Untagged
+  m_TagString: Fish
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63,14 +64,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1771188788351876}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.654081, z: 0, w: 0.7564246}
   m_LocalPosition: {x: -9.68, y: -1, z: 39.99}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4597265788643730}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 81.7, z: 0}
 --- !u!23 &23275492268625992
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -195,3 +196,15 @@ MonoBehaviour:
   m_Bait: {fileID: 0}
   m_FSMText: {fileID: 4900000, guid: a5d0ccfbe15873144aa856d0ab08e252, type: 3}
   m_FSMStateName: 
+--- !u!135 &135431253930292842
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1771188788351876}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}

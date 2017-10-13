@@ -20,9 +20,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4645599977533794}
   - component: {fileID: 114056163404638508}
-  m_Layer: 0
+  - component: {fileID: 135513680006007394}
+  m_Layer: 9
   m_Name: TropicalFish03
-  m_TagString: Untagged
+  m_TagString: Fish
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -37,7 +38,7 @@ GameObject:
   - component: {fileID: 4313311161856344}
   - component: {fileID: 33991221941364892}
   - component: {fileID: 23860875466433980}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: TropicalFish03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,3 +196,15 @@ MonoBehaviour:
   m_Bait: {fileID: 0}
   m_FSMText: {fileID: 4900000, guid: a5d0ccfbe15873144aa856d0ab08e252, type: 3}
   m_FSMStateName: 
+--- !u!135 &135513680006007394
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1704683476552038}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}

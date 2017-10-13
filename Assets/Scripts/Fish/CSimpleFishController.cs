@@ -21,6 +21,7 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 		public AnimationCurve rotationCurve;
 
 		[Header("Bait")]
+		public float minimumBaitValue 	= 0f;
 		public AnimationCurve chaseBaitCurve;
 
 		public CFishData ()
@@ -29,6 +30,7 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 			this.maxMoveSpeed	= 10f;
 			this.aroundRange	= 5f;
 			this.rotationSpeed 	= 10f;
+			this.minimumBaitValue = 2f;
 		}
 
 	}
@@ -50,11 +52,12 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 	protected float m_MoveDetailCurve 		= 0f;
 	protected float m_RotationDetailCurve 	= 0f;
 	protected float m_CurrentAxis 			= 0f;
+
 	protected Vector3 m_StartPos;
 	protected Vector3 m_CurrentTargetPos;
 
 	protected float m_ChaseBaitTimer 		= 10f;
-	protected float m_ChaseBaitRatio 		= 10f;
+	[SerializeField]	protected float m_ChaseBaitRatio 		= 10f;
 	protected float m_MaxBaitRatio 			= 10f;
 
 	protected FSMManager m_FSMManager;
@@ -103,6 +106,7 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 	public virtual void ChaseBait(CSimpleBaitController bait, float dt) {
 		this.MoveAroundTarget (bait.GetPosition (), this.m_ChaseBaitRatio, dt);
 		this.m_ChaseBaitTimer -= dt;
+//		this.m_ChaseBaitRatio += dt;
 	}
 
 	public virtual void BiteBait(CSimpleBaitController bait, float dt) {
@@ -169,7 +173,7 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 
 	public virtual bool IsBiteBail ()
 	{
-		return this.m_ChaseBaitRatio <= 0f;
+		return this.m_ChaseBaitRatio <= this.m_Data.minimumBaitValue;
 	}
 
 	public virtual bool IsBailTimer ()

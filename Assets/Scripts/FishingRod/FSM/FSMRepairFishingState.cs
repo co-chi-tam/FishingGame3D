@@ -14,6 +14,7 @@ public class FSMRepairFishingState : FSMBaseState{
 	public override void StartState()
 	{
 		base.StartState ();
+		this.m_Controller.RepairBait();
 	}
 
 	public override void UpdateState(float dt)

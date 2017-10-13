@@ -9,7 +9,7 @@
           "state_name": "StartFishingState",
           "states": [
             {
-              "condition_name": "IsFishBite",
+              "condition_name": "IsFishBite||IsFishingEnd",
               "state_name": "FinishFishingState",
               "states": []
             }

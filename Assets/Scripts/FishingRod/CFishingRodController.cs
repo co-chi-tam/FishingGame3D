@@ -19,7 +19,6 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 
 		[Header("Scroll force")]
 		public float maximumScrollForce = 0f;
-		public AnimationCurve scrollingForceCurve;
 
 		public CFishingRodData ()
 		{
@@ -67,7 +66,6 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 	protected override void Awake ()
 	{
 		base.Awake ();
-		this.m_IsBaitThrowed = false;
 
 		this.m_FSMManager = new FSMManager ();
 		this.m_FSMManager.LoadFSM (this.m_FSMText.text);
@@ -76,14 +74,15 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 		this.m_FSMManager.RegisterState ("StartFishingState", 		new FSMStartFishingState(this));
 		this.m_FSMManager.RegisterState ("FinishFishingState", 		new FSMFinishFishingState(this));
 
+		this.m_FSMManager.RegisterCondition ("IsObjectActive",		this.IsObjectActive);
 		this.m_FSMManager.RegisterCondition ("IsBaitThrowed",		this.IsBaitThrowed);
 		this.m_FSMManager.RegisterCondition ("IsFishBite", 			this.IsFishBite);
+		this.m_FSMManager.RegisterCondition ("IsFishingEnd",		this.IsFishingEnd);
 	}
 
 	protected override void Start ()
 	{
 		base.Start ();
-		this.m_Bait.SetPosition (this.m_BaitPoint.transform.position);
 	}
 
 	protected override void Update ()
@@ -99,9 +98,14 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 
 	#region Main methods
 
+	public virtual void RepairBait() {
+		this.m_IsBaitThrowed = false;
+		this.m_Bait.SetPosition (this.m_BaitPoint.transform.position);
+		this.m_Bait.SetAnimation ("isFloating", 0);
+		this.m_CurrentForce = 0f;
+	}
+
 	public virtual void RepairFishing(float dt) {
-		if (this.m_IsBaitThrowed == true)
-			return;
 		if (Input.GetMouseButtonDown (0)) {
 			this.m_CurrentForce = 0f;
 			this.SetAnimation ("FishingStep", 1);
@@ -118,8 +122,10 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 				var totalForce = this.m_Data.maximumThrowForce * this.m_Data.throwForceCurve.Evaluate (throwForce);
 				var minimumRange = hitInfo.point;
 				var baitPosition =  minimumRange * totalForce;
+				baitPosition.y = 0f;
 				this.m_Bait.ThrowBait (baitPosition, () => {
-					Debug.Log ("Throwed");
+					this.m_Bait.SetAnimation ("isFloating", 1);
+					this.m_Bait.AttractBait();
 				});
 				this.SetAnimation ("FishingStep", 2);
 			}
@@ -128,22 +134,21 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 		}
 	}
 
-	public virtual void ScrollBait(float dt) {
-		if (this.m_IsBaitThrowed == false)
-			return;
-		if (Input.GetMouseButton (0)) {
-			var direction = this.GetFitPosition (this.m_BaitPoint.transform.position) - this.m_Bait.GetFitPosition ();
-			var updatePosition = direction.normalized 
-				* this.m_Data.maximumScrollForce 
-				* this.m_Data.scrollingForceCurve.Evaluate (this.m_CurrentForce) 
-				* dt;
-			var movePosition = this.m_Bait.GetPosition () + updatePosition;
-			this.m_Bait.SetPosition (movePosition);
-			this.m_CurrentForce += dt;
-		}
+	public virtual void AttractBait(float dt) {
 		if (Input.GetMouseButtonUp (0)) {
-			this.m_CurrentForce = 0f;
+			this.m_Bait.SetAnimation ("IsAttractive");
+			this.m_Bait.AttractBait();
 		}
+	}
+
+	public virtual void ScrollBait(float dt) {
+		var direction = this.GetFitPosition (this.m_BaitPoint.transform.position) - this.m_Bait.GetFitPosition ();
+		var updatePosition = direction.normalized 
+			* this.m_Data.maximumScrollForce 
+			* dt;
+		var movePosition = this.m_Bait.GetPosition () + updatePosition;
+		this.m_Bait.SetPosition (movePosition);
+		this.SetAnimation ("IsScrolling", true);
 	}
 
 	#endregion
@@ -160,12 +165,19 @@ public class CFishingRodController : CSimpleController, IFishingRodContext {
 		return false;
 	}
 
+	public virtual bool IsFishingEnd ()
+	{
+		var direction = this.GetFitPosition (this.m_BaitPoint.transform.position) - this.m_Bait.GetFitPosition ();
+		return direction.sqrMagnitude < 0.1f;
+	}
+
 	#endregion
 
 	#region Getter && Setter
 
-	public virtual void SetAnimation (string name, object param = null)
+	public override void SetAnimation (string name, object param = null)
 	{
+		base.SetAnimation (name, param);
 		if (this.m_Animator == null)
 			return;
 		if (param is int) {
