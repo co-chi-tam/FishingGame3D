@@ -182,8 +182,8 @@ MonoBehaviour:
       - serializedVersion: 2
         time: 0
         value: 0
-        inSlope: 2
-        outSlope: 2
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
       - serializedVersion: 2
         time: 1
@@ -197,6 +197,7 @@ MonoBehaviour:
   m_Bait: {fileID: 0}
   m_FSMText: {fileID: 4900000, guid: a5d0ccfbe15873144aa856d0ab08e252, type: 3}
   m_FSMStateName: 
+  m_ChaseBaitRatio: 10
 --- !u!135 &135549162508279122
 SphereCollider:
   m_ObjectHideFlags: 1

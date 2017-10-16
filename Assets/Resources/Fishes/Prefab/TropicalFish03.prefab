@@ -157,32 +157,27 @@ MonoBehaviour:
       - serializedVersion: 2
         time: 0
         value: 0
-        inSlope: 4.1211047
-        outSlope: 4.1211047
-        tangentMode: 0
-      - serializedVersion: 2
-        time: 0.5
-        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
       - serializedVersion: 2
-        time: 0.9945679
-        value: 0.010211945
-        inSlope: -4.5738916
-        outSlope: -4.5738916
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
+    minimumBaitValue: 2
     chaseBaitCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 2
         time: 0
         value: 0
-        inSlope: 2
-        outSlope: 2
+        inSlope: 0
+        outSlope: 0
         tangentMode: 0
       - serializedVersion: 2
         time: 1
@@ -196,6 +191,7 @@ MonoBehaviour:
   m_Bait: {fileID: 0}
   m_FSMText: {fileID: 4900000, guid: a5d0ccfbe15873144aa856d0ab08e252, type: 3}
   m_FSMStateName: 
+  m_ChaseBaitRatio: 10
 --- !u!135 &135513680006007394
 SphereCollider:
   m_ObjectHideFlags: 1

@@ -175,6 +175,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
+    minimumBaitValue: 2
     chaseBaitCurve:
       serializedVersion: 2
       m_Curve:
@@ -196,6 +197,7 @@ MonoBehaviour:
   m_Bait: {fileID: 0}
   m_FSMText: {fileID: 4900000, guid: a5d0ccfbe15873144aa856d0ab08e252, type: 3}
   m_FSMStateName: 
+  m_ChaseBaitRatio: 10
 --- !u!135 &135094454051042022
 SphereCollider:
   m_ObjectHideFlags: 1

@@ -41,6 +41,11 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 
 	[Header("Data")]
 	[SerializeField]	protected CFishData m_Data;
+	[Header("Steering")]
+	[SerializeField]	protected LayerMask m_SteeringLayerMask;
+	[SerializeField]	protected float m_RadiusBase = 1f;
+	[SerializeField]	protected float[] m_SteeringAngles = new float[] { 0 };
+	[SerializeField]	protected float[] m_SteeringRanges = new float[] { 3.0f };
 	[Header("Bait")]
 	[SerializeField]	protected CSimpleBaitController m_Bait;
 	[Header("FSM")]
@@ -57,7 +62,7 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 	protected Vector3 m_CurrentTargetPos;
 
 	protected float m_ChaseBaitTimer 		= 10f;
-	[SerializeField]	protected float m_ChaseBaitRatio 		= 10f;
+	protected float m_ChaseBaitRatio 		= 10f;
 	protected float m_MaxBaitRatio 			= 10f;
 
 	protected FSMManager m_FSMManager;
@@ -126,6 +131,9 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 	}
 
 	public virtual void MoveAroundStartPoint(float dt) {
+		if (this.SteeringObject ()) {
+			this.FindNewTargetAround (this.m_StartPos, this.data.aroundRange);
+		} 
 		this.MoveAroundTarget (this.m_StartPos, this.data.aroundRange, dt);
 	}
 
@@ -134,15 +142,19 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 		if (direction.sqrMagnitude > 0.1f) {
 			this.MoveFollow (this.m_CurrentTargetPos, dt);
 		} else {
-			var randomInside = UnityEngine.Random.insideUnitCircle;
-			var randomNewPos = randomInside * radius;
-			var currentNewPos = targetPos;
-			currentNewPos.x += randomNewPos.x;
-			currentNewPos.y = this.m_Transform.position.y;
-			currentNewPos.z += randomNewPos.y;
-			this.m_CurrentTargetPos = currentNewPos;
-			this.m_RotationDetailCurve = 0f;
+			this.FindNewTargetAround (targetPos, radius);
 		}
+	}
+
+	public virtual void FindNewTargetAround(Vector3 targetPos, float radius) {
+		var randomInside = UnityEngine.Random.insideUnitCircle;
+		var randomNewPos = randomInside * radius;
+		var currentNewPos = targetPos;
+		currentNewPos.x += randomNewPos.x;
+		currentNewPos.y = this.m_Transform.position.y;
+		currentNewPos.z += randomNewPos.y;
+		this.m_CurrentTargetPos = currentNewPos;
+		this.m_RotationDetailCurve = 0f;
 	}
 
 	public virtual void MoveForward(float dt) {
@@ -160,6 +172,29 @@ public class CSimpleFishController : CSimpleController, IFishContext {
 		this.m_CurrentAxis += axis * this.m_Data.rotationSpeed * dt;
 		this.m_Transform.rotation = Quaternion.AngleAxis (this.m_CurrentAxis, Vector3.up);
 		this.m_RotationDetailCurve += dt;
+	}
+
+	public virtual bool SteeringObject() {
+		if (this.m_SteeringAngles.Length != this.m_SteeringRanges.Length)
+			return false;
+		var forward = this.m_Transform.forward;
+		var haveObstacle = false;
+		for (int i = 0; i < this.m_SteeringAngles.Length; i++) {
+			var rayCast = Quaternion.AngleAxis(this.m_SteeringAngles[i], this.m_Transform.up) 
+				* forward 
+				* this.m_SteeringRanges[i];
+			RaycastHit rayCastHit;
+			if (Physics.Raycast (this.m_Transform.position + (rayCast.normalized * this.m_RadiusBase), 
+					rayCast, out rayCastHit, 
+					this.m_SteeringRanges[i], 
+					this.m_SteeringLayerMask)) {
+				haveObstacle |= true;
+			} 
+#if UNITY_EDITOR
+			Debug.DrawRay (this.m_Transform.position + (rayCast.normalized * this.m_RadiusBase), rayCast, Color.white);
+#endif
+		}
+		return haveObstacle;
 	}
 
 	#endregion
